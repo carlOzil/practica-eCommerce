@@ -87,7 +87,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (res.ok) {
                 const data = await res.json()
-                console.log(res, "DATA", data.products)
                 return {
                     ok: true,
                     data: data.products
@@ -103,18 +102,9 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     };
 
-    //Función para mostrar primeras sugerencias
-    const mostrarSugeridos = async () => {
-        const sugeridos = [...smartphones]
-        const urlSug = `${urlBase}/${sugeridos}`
-        const { ok, data } = await consulta(urlSug)
-        if (ok) {
-            console.log(data)
+    
 
-        };
-    }
+    /// INVOCACIONES --->>>
+    mostrarCat()
 
-        /// INVOCACIONES --->>>
-        mostrarCat()
-mostrarSugeridos()
-    }) //////////LOAD//////////
+}) //////////LOAD//////////
