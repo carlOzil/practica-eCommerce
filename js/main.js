@@ -3,14 +3,18 @@ document.addEventListener('DOMContentLoaded', () => {
     /// VARIABLES --->>>
     //URL de la API
     const urlBase = "https://dummyjson.com/products";
-    //Captura por ID de variables para su uso desde el DOM
     //Captación de select para targetearlo en el evento change
-    const categSelec = document.querySelector("#cats")
+    const categSelec = document.querySelector("#cats");
     //Captura deñ div que albergará las categorías sugeridas o solicitadas
     const cajaCat = document.querySelector('#cajaCategorias');
     //Sumatorio inicial de precio final comienza desde 0
     let suma = 0;
+    //Captura de la categoría como string vacío para despues hacer uso del valor que pinta el select
     let categoria = '';
+    //Capturas para el manejo de los botones del carrito
+    const openModalBtn = document.getElementById("openModalBtn");
+    const modal = document.getElementById("myModal");
+    const closeButton = document.querySelector(".close");
     //Creación de fragment para facilitar el traspaso de variables en conjunto de un bloque a otro
     const fragment = document.createDocumentFragment();
     //Seteo del array de productos en el carro que va a albergar el localStorage 
@@ -20,7 +24,19 @@ document.addEventListener('DOMContentLoaded', () => {
     categSelec.addEventListener('change', () => {
 
         categoria = categSelec.value;
-        pintarSugerencias()
+        pintarDesdeSelect()
+    });
+    //Eventos para desplegar y plegar carrito
+    openModalBtn.addEventListener("click", () => {
+        modal.style.display = "block";
+    });
+    closeButton.addEventListener("click", () => {
+        modal.style.display = "none";
+    });
+    window.addEventListener("click", (event) => {
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
     });
     //DELEGACION de EVENTOS poniendo a la escucha a todo el docmuento de cualquier evento 'click' que ocurra
     document.addEventListener('click', ({ target }) => {
@@ -56,18 +72,18 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('enelcarro', JSON.stringify(arrayCarro));
     };
 
-
-    const pintarSugerencias = async () => {
+    //Funcion para mostrar la categoría que elijamos desde el select, desestructurar y capturar valores de los productos en el boton de agregar al carro
+    const pintarDesdeSelect = async () => {
         const url = `${urlBase}/category/${categoria}`
         try {
-            const res = await fetch(url);
+            const resp = await fetch(url);
 
-            if (res.ok) {
+            if (resp.ok) {
 
-                const data = await res.json();
+                const { products } = await resp.json();
                 cajaCat.innerHTML = '';
 
-                data.products.forEach(({ title, price, rating, thumbnail }) => {
+                products.forEach(({ id, title, price, rating, thumbnail }) => {
 
                     const cajaP = document.createElement('FIGURE');
                     const fotoP = document.createElement('IMG');
@@ -75,12 +91,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     const nombreP = document.createElement('H3');
                     nombreP.textContent = title;
                     const precioP = document.createElement('P');
-                    precioP.textContent = price;
+                    precioP.textContent = price + "€";
                     const rateP = document.createElement('P');
-                    rateP.textContent = rating;
+                    rateP.textContent = rating + "stars";
+                    const btnAgregar = document.createElement("BUTTON");
+                    btnAgregar.classList.add("agregar");
 
-                    cajaP.append(fotoP, nombreP, precioP, rateP);
-                    fragment.append(cajaP)
+                    btnAgregar.value0 = id;
+                    btnAgregar.value1 = title;
+                    btnAgregar.value2 = price;
+                    btnAgregar.value3 = thumbnail;
+                    btnAgregar.textContent = "Agregar al carro";
+
+                    cajaP.append(fotoP, nombreP, precioP, rateP, btnAgregar);
+                    fragment.append(cajaP);
                 });
                 cajaCat.append(fragment);
             } else {
@@ -91,9 +115,8 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     };
 
-
     //Función para desplegar categorías en el select para evento 'change'
-    const mostrarCat = async () => {
+    const selectCategorias = async () => {
 
         try {
             const resp = await fetch(`${urlBase}/categories`);
@@ -115,31 +138,12 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     };
 
-    //Función asincrona de consulta que retorna una promesa a la espera de la respuesta de la API Fetch
-    // const consulta = async (url) => {
+    const agregarCarrito = () => {
 
-    //     try {
-    //         const res = await fetch(url)
-
-    //         if (res.ok) {
-    //             const data = await res.json()
-    //             return {
-    //                 ok: true,
-    //                 data: data.products
-    //             };
-    //         } else {
-    //             throw ('Fuera de Stock')
-    //         };
-    //     } catch (error) {
-    //         return {
-    //             ok: false,
-    //             error: error
-    //         };
-    //     };
-    // };
-
-
+    };
 
     /// INVOCACIONES --->>>
-    mostrarCat();
+    selectCategorias();
+
+
 }) //////////LOAD//////////
